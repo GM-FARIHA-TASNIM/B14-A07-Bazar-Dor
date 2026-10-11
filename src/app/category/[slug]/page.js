@@ -1,27 +1,50 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductGrid from "@/components/ProductGrid";
 import { getCategories, getProducts } from "@/lib/api";
 
 export default async function CategoryPage({ params }) {
   const { slug } = await params;
-  const [categories, products] = await Promise.all([
+
+  const [categories, allProducts] = await Promise.all([
     getCategories(),
-    getProducts(slug),
+    getProducts(),
   ]);
 
   const category = categories.find(
     (item) =>
-      String(item.slug ?? item.id ?? item._id) === slug ||
-      String(item.name ?? "").toLowerCase() === slug.toLowerCase(),
+      item.slug.toLowerCase() === slug.toLowerCase() ||
+      item.id.toLowerCase() === slug.toLowerCase(),
   );
 
-  if (!category && !products.length) notFound();
+  const matchingProducts = allProducts.filter((product) => {
+    const productCategory = String(product.category).toLowerCase();
+
+    return (
+      productCategory === slug.toLowerCase() ||
+      productCategory === category?.name?.toLowerCase() ||
+      productCategory === category?.slug?.toLowerCase()
+    );
+  });
+
+  if (!category && matchingProducts.length === 0) {
+    notFound();
+  }
 
   return (
-    <div className="container page-section">
-      <p className="eyebrow">ক্যাটাগরি</p>
-      <h1>{category?.name ?? category?.title ?? slug}</h1>
-      <ProductGrid products={products} />
-    </div>
+    <section className="category-page">
+      <div className="container">
+        <div className="breadcrumb">
+          <Link href="/">হোম</Link>
+          <span> / </span>
+          <span>{category?.name ?? slug}</span>
+        </div>
+
+        <ProductGrid
+          products={matchingProducts}
+          title={`${category?.name ?? slug} বিভাগের পণ্য`}
+        />
+      </div>
+    </section>
   );
 }

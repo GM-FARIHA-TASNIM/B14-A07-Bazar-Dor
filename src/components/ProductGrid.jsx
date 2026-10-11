@@ -1,66 +1,44 @@
-"use client";
-
-import { useMemo, useState } from "react";
+import Link from "next/link";
 import ProductCard from "./ProductCard";
 
-export default function ProductGrid({ products = [] }) {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("default");
-
-  const filteredProducts = useMemo(() => {
-    let result = products.filter((product) =>
-      product.name.toLowerCase().includes(search.toLowerCase()),
-    );
-
-    if (sort === "low") {
-      result = [...result].sort((a, b) => a.price - b.price);
-    }
-
-    if (sort === "high") {
-      result = [...result].sort((a, b) => b.price - a.price);
-    }
-
-    return result;
-  }, [products, search, sort]);
-
+export default function ProductGrid({
+  products = [],
+  title = "জনপ্রিয় পণ্য",
+  showViewAll = false,
+}) {
   return (
-    <section id="products" className="container section">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">বাজারের তালিকা</p>
-          <h2>সব পণ্য</h2>
+    <section className="products-section" id="products">
+      <div className="container">
+        <div className="section-heading">
+          <div>
+            <span className="section-subtitle">বাজারদর এক নজরে</span>
+            <h2>{title}</h2>
+          </div>
+
+          {showViewAll ? (
+            <Link href="/category/chal" className="view-all-link">
+              সব পণ্য দেখুন →
+            </Link>
+          ) : null}
         </div>
 
-        <div className="grid-controls">
-          <input
-            type="search"
-            placeholder="পণ্য খুঁজুন..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            aria-label="পণ্য খুঁজুন"
-          />
-
-          <select
-            value={sort}
-            onChange={(event) => setSort(event.target.value)}
-            aria-label="দাম অনুযায়ী সাজান"
-          >
-            <option value="default">ডিফল্ট</option>
-            <option value="low">কম দাম আগে</option>
-            <option value="high">বেশি দাম আগে</option>
-          </select>
-        </div>
+        {products.length > 0 ? (
+          <div className="product-grid">
+            {products.map((product, index) => (
+              <ProductCard
+                key={product.id ?? product.slug ?? index}
+                product={product}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-products">
+            <span>🛍️</span>
+            <h3>এখনো কোনো পণ্য পাওয়া যায়নি</h3>
+            <p>পণ্যের তথ্য লোড হলে এখানে দেখা যাবে।</p>
+          </div>
+        )}
       </div>
-
-      {filteredProducts.length ? (
-        <div className="product-grid">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id || product.slug} product={product} />
-          ))}
-        </div>
-      ) : (
-        <p className="empty-state">কোনো পণ্য পাওয়া যায়নি।</p>
-      )}
     </section>
   );
 }

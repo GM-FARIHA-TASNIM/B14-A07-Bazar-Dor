@@ -3,8 +3,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata = {
-  title: "বাজার দর | Bazar Dor",
-  description: "নিত্যপ্রয়োজনীয় পণ্যের দৈনিক বাজারদর দেখুন।",
+  title: "বাজার দর | প্রতিদিনের বাজারদর",
+  description:
+    "চাল, ডাল, তেল, সবজি, মাছ ও মাংসসহ নিত্যপ্রয়োজনীয় পণ্যের বাজারদর জানুন।",
 };
 
 export default function RootLayout({ children }) {

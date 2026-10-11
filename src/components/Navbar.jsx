@@ -1,15 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client";
+
+const categories = [
+  { name: "সব পণ্য", href: "/" },
+  { name: "চাল", href: "/category/chal" },
+  { name: "ডাল", href: "/category/dal" },
+  { name: "তেল", href: "/category/tel" },
+  { name: "সবজি", href: "/category/sobji" },
+  { name: "মাছ ও মাংস", href: "/category/mach-mangsho" },
+  { name: "মসলা", href: "/category/mosla" },
+];
 
 export default function Navbar() {
-  const { data: session } = authClient.useSession();
-  const [date, setDate] = useState("");
+  const [banglaDate, setBanglaDate] = useState("");
 
   useEffect(() => {
-    setDate(
+    setBanglaDate(
       new Intl.DateTimeFormat("bn-BD", {
         day: "numeric",
         month: "long",
@@ -20,46 +29,42 @@ export default function Navbar() {
 
   return (
     <header className="site-header">
-      <div className="container nav-wrap">
-        <Link href="/" className="brand">
-          <img src="/logo-icon.png" alt="Bazar Dor logo" />
-          <span>বাজার দর</span>
-        </Link>
+      <div className="container">
+        <div className="nav-wrap">
+          <Link href="/" className="brand">
+            <Image
+              src="/logo-icon.png"
+              alt="বাজার দর লোগো"
+              width={42}
+              height={42}
+              priority
+            />
 
-        <nav className="nav-links">
-          <Link href="/">হোম</Link>
-          <Link href="/category/chal">চাল</Link>
-          <Link href="/category/shobji">সবজি</Link>
-          <Link href="/category/mach">মাছ</Link>
-        </nav>
+            <span>
+              বাজার দর
+              <span className="date-text" style={{ display: "block" }}>
+                {banglaDate}
+              </span>
+            </span>
+          </Link>
 
-        <div className="nav-actions">
-          <span className="date-text">{date}</span>
-          {session?.user ? (
-            <>
-              <Link href="/profile" className="btn btn-outline">
-                প্রোফাইল
+          <nav className="nav-links" aria-label="প্রধান নেভিগেশন">
+            {categories.map((category) => (
+              <Link key={category.href} href={category.href}>
+                {category.name}
               </Link>
-              <button
-                className="btn btn-primary"
-                onClick={async () => {
-                  await authClient.signOut();
-                  window.location.href = "/";
-                }}
-              >
-                লগআউট
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/signin" className="btn btn-outline">
-                লগইন
-              </Link>
-              <Link href="/signup" className="btn btn-primary">
-                রেজিস্টার
-              </Link>
-            </>
-          )}
+            ))}
+          </nav>
+
+          <div className="nav-actions">
+            <Link href="/signin" className="btn btn-outline">
+              সাইন ইন
+            </Link>
+
+            <Link href="/signup" className="btn btn-primary">
+              সাইন আপ
+            </Link>
+          </div>
         </div>
       </div>
     </header>

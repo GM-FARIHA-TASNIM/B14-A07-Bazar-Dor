@@ -1,12 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { signIn } from "@/lib/auth-client";
 
-function SignInForm() {
-  const searchParams = useSearchParams();
+export default function SignInPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,84 +17,67 @@ function SignInForm() {
     setError("");
     setLoading(true);
 
-    const result = await authClient.signIn.email({
-      email,
-      password,
-    });
+    try {
+      const result = await signIn.email({ email, password });
 
-    setLoading(false);
+      if (result?.error) {
+        setError(result.error.message || "সাইন ইন করা যায়নি।");
+        return;
+      }
 
-    if (result.error) {
-      setError(result.error.message || "লগইন করা যায়নি।");
-      return;
+      router.push("/profile");
+      router.refresh();
+    } catch {
+      setError("সাইন ইন করা যায়নি। আবার চেষ্টা করো।");
+    } finally {
+      setLoading(false);
     }
-
-    const next = searchParams.get("next");
-    window.location.href =
-      next && next.startsWith("/") && !next.startsWith("//")
-        ? next
-        : "/profile";
   }
 
   return (
     <section className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <p className="eyebrow">আবার স্বাগতম</p>
-        <h1>লগইন</h1>
-        <p>আপনার অ্যাকাউন্টে প্রবেশ করুন।</p>
+      <div className="auth-card">
+        <h1>সাইন ইন</h1>
+        <p>তোমার বাজার দর অ্যাকাউন্টে প্রবেশ করো।</p>
 
-        <label htmlFor="email">ইমেইল</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">ইমেইল</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="name@example.com"
+            autoComplete="email"
+            required
+          />
 
-        <label htmlFor="password">পাসওয়ার্ড</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
+          <label htmlFor="password">পাসওয়ার্ড</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="তোমার পাসওয়ার্ড"
+            autoComplete="current-password"
+            required
+          />
 
-        {error && <p className="form-error">{error}</p>}
+          {error ? <p className="auth-error">{error}</p> : null}
 
-        <button className="btn btn-primary full-width" disabled={loading}>
-          {loading ? "লগইন হচ্ছে..." : "লগইন করুন"}
-        </button>
+          <button
+            type="submit"
+            className="btn btn-primary auth-submit"
+            disabled={loading}
+          >
+            {loading ? "সাইন ইন হচ্ছে..." : "সাইন ইন"}
+          </button>
+        </form>
 
-        <button
-          type="button"
-          className="btn btn-outline full-width"
-          onClick={() => authClient.signIn.social({ provider: "google" })}
-        >
-          Google দিয়ে লগইন
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-outline full-width"
-          onClick={() => authClient.signIn.social({ provider: "github" })}
-        >
-          GitHub দিয়ে লগইন
-        </button>
-
-        <p>
-          অ্যাকাউন্ট নেই? <Link href="/signup">রেজিস্টার করুন</Link>
+        <p className="auth-switch">
+          অ্যাকাউন্ট নেই? <Link href="/signup">সাইন আপ করো</Link>
         </p>
-      </form>
+      </div>
     </section>
-  );
-}
-
-export default function SignInPage() {
-  return (
-    <Suspense fallback={<p className="container">লোড হচ্ছে...</p>}>
-      <SignInForm />
-    </Suspense>
   );
 }

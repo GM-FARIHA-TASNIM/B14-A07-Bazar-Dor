@@ -1,23 +1,33 @@
-export default function PriceTicker({ products = [] }) {
-  if (!products.length) return null;
+"use client";
 
-  const items = [...products, ...products];
+export default function PriceTicker({ items = [] }) {
+  if (!items.length) {
+    return (
+      <div className="price-ticker">
+        <div className="container ticker-content">
+          <span className="ticker-label">আজকের বাজারদর</span>
+          <span>বাজারদরের তথ্য লোড হচ্ছে...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="ticker">
-      <div className="ticker-track">
-        {items.map((product, index) => {
-          const rising = product.price >= product.previousPrice;
+    <div className="price-ticker">
+      <div className="container ticker-content">
+        <span className="ticker-label">আজকের বাজারদর</span>
 
-          return (
-            <span className="ticker-item" key={`${product.id}-${index}`}>
-              {product.emoji} {product.name}: ৳{product.price}/{product.unit}
-              <span className={rising ? "up" : "down"}>
-                {rising ? " ▲" : " ▼"}
+        <div className="ticker-items">
+          {items.map((item, index) => (
+            <span className="ticker-item" key={item.id ?? index}>
+              <strong>{item.name ?? item.title ?? "পণ্য"}</strong>
+              <span>
+                {item.price != null ? `${item.price} টাকা` : "দর পাওয়া যায়নি"}
               </span>
+              {item.unit ? <span> / {item.unit}</span> : null}
             </span>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
