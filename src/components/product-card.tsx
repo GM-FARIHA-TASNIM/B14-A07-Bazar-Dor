@@ -1,0 +1,4 @@
+import Link from "next/link";
+import type {Product} from "@/lib/products";
+import {formatPrice,getChangeClass,getChangeLabel} from "@/lib/products";
+export function ProductCard({product}:{product:Product}){return <Link className="product-card" href={`/product/${encodeURIComponent(product.slug)}`}><div className="product-emoji">{product.emoji}</div><h3>{product.name}</h3><div className="unit">{product.unit} · {product.category}</div><div className="price-line"><div><div className="price-label">আজকের দাম</div><div className="price">{formatPrice(product.price)}</div></div><span className={`change ${getChangeClass(product.change)}`}>{getChangeLabel(product.change)}</span></div></Link>}

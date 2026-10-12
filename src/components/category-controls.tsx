@@ -1,0 +1,5 @@
+ "use client";
+import {useMemo,useState} from "react";
+import type {Product} from "@/lib/products";
+import {ProductGrid} from "@/components/product-grid";
+export function CategoryControls({products}:{products:Product[]}){const [sort,setSort]=useState("default");const sorted=useMemo(()=>{const list=[...products];if(sort==="asc")list.sort((a,b)=>a.price-b.price);if(sort==="desc")list.sort((a,b)=>b.price-a.price);return list},[products,sort]);return <><div className="filter-row" style={{justifyContent:"flex-end",marginBottom:18}}><label htmlFor="sort" className="small-muted">সাজান:</label><select id="sort" className="select" value={sort} onChange={e=>setSort(e.target.value)}><option value="default">ডিফল্ট</option><option value="asc">দাম: কম থেকে বেশি</option><option value="desc">দাম: বেশি থেকে কম</option></select></div><ProductGrid products={sorted}/></>}

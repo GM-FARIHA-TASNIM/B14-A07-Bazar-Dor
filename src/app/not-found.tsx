@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound(){return <main className="container section"><div className="empty"><div style={{fontSize:64,fontWeight:900,color:"#286a42"}}>404</div><h1 className="page-title">পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</h1><p className="page-subtitle">আপনি যে পৃষ্ঠাটি খুঁজছেন সেটি সরানো হয়েছে অথবা ঠিকানাটি ভুল।</p><Link className="btn btn-primary" href="/" style={{marginTop:20}}>হোম পেজে ফিরে যান</Link></div></main>}
