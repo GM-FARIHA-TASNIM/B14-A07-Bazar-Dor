@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="container section"><div className="skeleton" style={{height:180,marginBottom:25}}/><div className="product-grid">{Array.from({length:8},(_,i)=><div className="skeleton" key={i}/>)}</div></main>}
